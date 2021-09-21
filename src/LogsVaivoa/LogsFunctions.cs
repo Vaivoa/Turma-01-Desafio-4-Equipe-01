@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
+using FluentValidation.Results;
+using LogsVaivoa.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -13,9 +16,9 @@ using Newtonsoft.Json;
 
 namespace LogsVaivoa
 {
-    public static class Function1
+    public static class LogsFunction
     {
-        [FunctionName("Function1")]
+        [FunctionName("LogsFunction")]
         [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
         [OpenApiParameter(name: "name", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **Name** parameter")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(string), Description = "The OK response")]
@@ -24,18 +27,13 @@ namespace LogsVaivoa
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
-
+            
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            var data = JsonConvert.DeserializeObject<LogModel>(requestBody);
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            var (_, result) = LogService.InsertLog(data);
 
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(result);
         }
     }
 
@@ -44,6 +42,10 @@ namespace LogsVaivoa
         public string Nome { get; set; }
         public string Mensagem { get; set; }
         public string Detalhe { get; set; }
+
+
+        public List<ValidationFailure> GetErrors() => new LogModelValidation().Validate(this).Errors;
+
     }
 
     public class LogModelValidation : AbstractValidator<LogModel>
