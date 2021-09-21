@@ -19,9 +19,10 @@ namespace LogsVaivoa
     public static class LogsFunction
     {
         [FunctionName("LogsFunction")]
-        [OpenApiOperation(operationId: "Run", tags: new[] { "name" })]
-        [OpenApiParameter(name: "name", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **Name** parameter")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(string), Description = "The OK response")]
+        [OpenApiOperation(operationId: "Run")]
+        [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Log), Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Log), Description = "Created")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(List<ValidationFailure>), Description = "Fail Validation")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req,
             ILogger log)
@@ -31,9 +32,11 @@ namespace LogsVaivoa
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
-            var (_, result) = LogService.InsertLog(data);
+            var (status, result) = LogService.InsertLog(data);
 
-            return new OkObjectResult(result);
+            if (status) return new CreatedResult("", result);
+
+            return new BadRequestObjectResult(result);
         }
     }
 
