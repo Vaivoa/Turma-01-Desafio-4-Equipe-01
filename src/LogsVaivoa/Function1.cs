@@ -1,6 +1,7 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -19,7 +20,7 @@ namespace LogsVaivoa
         [OpenApiParameter(name: "name", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The **Name** parameter")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "text/plain", bodyType: typeof(string), Description = "The OK response")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
@@ -37,5 +38,31 @@ namespace LogsVaivoa
             return new OkObjectResult(responseMessage);
         }
     }
+
+    public class LogModel
+    {
+        public string Nome { get; set; }
+        public string Mensagem { get; set; }
+        public string Detalhe { get; set; }
+    }
+
+    public class LogModelValidation : AbstractValidator<LogModel>
+    {
+        public LogModelValidation()
+        {
+            RuleFor(c => c.Nome)
+                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
+                .MaximumLength(50).WithMessage("O campo {PropertyName} deve ter no maximo 50 caracteres");
+            
+            RuleFor(c => c.Mensagem)
+                .NotEmpty().WithMessage("O campo {PropertyName} precisa ser fornecido")
+                .MaximumLength(250).WithMessage("O campo {PropertyName} deve ter no maximo 50 caracteres");
+            
+            RuleFor(c => c.Detalhe)
+                .MaximumLength(1000).WithMessage("O campo {PropertyName} deve ter no maximo 50 caracteres");
+
+        }
+    }
+
 }
 
