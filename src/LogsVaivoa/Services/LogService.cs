@@ -14,7 +14,7 @@ namespace LogsVaivoa.Services
             return new SqlConnection(Environment.GetEnvironmentVariable("SqlConnection"));
         }
 
-        public static (bool, object) InsertLog(LogModel log)
+        public static (bool, object) InsertLog(Log log)
         {
             var errors = log.GetErrors();
 
