@@ -29,7 +29,7 @@ namespace LogsVaivoa
             log.LogInformation("C# HTTP trigger function processed a request.");
             
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<LogModel>(requestBody);
+            var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
             var (_, result) = LogService.InsertLog(data);
 
@@ -37,7 +37,7 @@ namespace LogsVaivoa
         }
     }
 
-    public class LogModel
+    public class Log
     {
         public string Nome { get; set; }
         public string Mensagem { get; set; }
@@ -48,7 +48,7 @@ namespace LogsVaivoa
 
     }
 
-    public class LogModelValidation : AbstractValidator<LogModel>
+    public class LogModelValidation : AbstractValidator<Log>
     {
         public LogModelValidation()
         {
