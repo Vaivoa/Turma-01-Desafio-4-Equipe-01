@@ -40,4 +40,4 @@ jobs:
       run: |
         dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}} /d:sonar.projectBaseDir="./${{env.AZURE_FUNCTIONAPP_PACKAGE_PATH}}"
         dotnet build "./${{env.AZURE_FUNCTIONAPP_PACKAGE_PATH}}"
-        dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}} /d:sonar.projectBaseDir="./${{env.AZURE_FUNCTIONAPP_PACKAGE_PATH}}"
+        dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
