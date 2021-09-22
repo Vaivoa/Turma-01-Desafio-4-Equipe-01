@@ -20,7 +20,7 @@ env:
   #ROOT_SOLUTION_PATH: src
 
 jobs:
-  build-and-deploy:
+  sonarqube-analizer:
     runs-on: windows-latest
     environment: dev
     steps:
