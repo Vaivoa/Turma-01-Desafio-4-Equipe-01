@@ -1,35 +1,56 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
+using LogsVaivoa;
 using LogsVaivoa.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
+using Microsoft.Azure.WebJobs.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using ILoggerSerilog = Serilog.ILogger;
 
+[assembly: WebJobsStartup(typeof(Startup))]
 namespace LogsVaivoa
 {
-    public static class LogsFunction
+    public class Startup : IWebJobsStartup
     {
+        public void Configure(IWebJobsBuilder builder)
+        {
+            builder.Services.AddLogging();
+            builder.Services.AddSingleton<LoggerElk>();
+
+        }
+    }
+
+    public class LogsFunction
+    {
+
+        private readonly ILoggerSerilog _log;
+
+        public LogsFunction(LoggerElk loggerElk)
+        {
+            _log = loggerElk.CreateLogger();
+        }
+
         [FunctionName("LogsFunction")]
         [OpenApiOperation(operationId: "Run")]
         [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(Log), Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.Created, contentType: "application/json", bodyType: typeof(Log), Description = "Created")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(List<ValidationFailure>), Description = "Fail Validation")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req,
-            ILogger log)
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-            
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            _log.Information("C# HTTP trigger function processed a request.");
+
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
             var (status, result) = LogService.InsertLog(data);
