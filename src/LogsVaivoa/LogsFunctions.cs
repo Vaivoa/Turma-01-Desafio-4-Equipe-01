@@ -50,6 +50,12 @@ namespace LogsVaivoa
         {
             _log.Information("C# HTTP trigger function processed a request.");
 
+            HttpLogRequest.GetLogApp();
+
+            var test = new HttpLogRequest(_log);
+            
+            test.SendMetricFunctionToElk();
+
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
