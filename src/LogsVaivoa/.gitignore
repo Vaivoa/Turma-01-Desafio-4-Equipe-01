@@ -11,6 +11,7 @@ local.settings.json
 *.sln.docstates
 
 .idea
+.sonarqube
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
