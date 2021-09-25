@@ -13,31 +13,21 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Azure.WebJobs.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using ILoggerSerilog = Serilog.ILogger;
 
 [assembly: WebJobsStartup(typeof(Startup))]
 namespace LogsVaivoa
 {
-    public class Startup : IWebJobsStartup
-    {
-        public void Configure(IWebJobsBuilder builder)
-        {
-            builder.Services.AddLogging();
-            builder.Services.AddSingleton<LoggerElk>();
-
-        }
-    }
+    
 
     public class LogsFunction
     {
-
-        private readonly ILoggerSerilog _log;
-
-        public LogsFunction(LoggerElk loggerElk)
+        private readonly LogService _logService;
+        private readonly ApplicationInsightService _appService;
+        public LogsFunction(LogService logService, ApplicationInsightService appService)
         {
-            _log = loggerElk.CreateLogger();
+            _logService = logService;
+            _appService = appService;
         }
 
         [FunctionName("LogsFunction")]
@@ -48,18 +38,15 @@ namespace LogsVaivoa
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"post", Route = null)] HttpRequest req)
         {
-            _log.Information("C# HTTP trigger function processed a request.");
+           // _log.Information("C# HTTP trigger function processed a request.");
 
-            HttpLogRequest.GetLogApp();
-
-            var test = new HttpLogRequest(_log);
+           await _appService.SendMetricToElastic();
             
-            test.SendMetricFunctionToElk();
 
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
-            var (status, result) = LogService.InsertLog(data);
+            var (status, result) = await _logService.InsertLog(data);
 
             if (status) return new CreatedResult("", result);
 

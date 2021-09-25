@@ -3,30 +3,38 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 
 namespace LogsVaivoa.Services
 {
-    public static class LogService
+    public class LogService
     {
-        private static SqlConnection DbConnection()
+        private readonly string _sqlConnection;
+        private readonly ElasticsearchService _elasticService; 
+        public LogService(ElasticsearchService elasticService)
         {
-            return new SqlConnection(Environment.GetEnvironmentVariable("SqlConnection"));
+            _sqlConnection = Environment.GetEnvironmentVariable("SqlConnection");
+            _elasticService = elasticService;
         }
-
-        public static (bool, object) InsertLog(Log log)
+        
+        public async Task<(bool, object)> InsertLog(Log log)
         {
             var errors = log.GetErrors();
-
             if (errors.Any()) return (false, errors);
 
-            using var db = DbConnection();
-            db.Insert(log);
+           await _elasticService.ElasticClient
+                .IndexAsync(log, idx => idx.Index(Environment.GetEnvironmentVariable("IndexAI")));
+
+          
+            await using var db = DbConnection(_sqlConnection);
+            await db.InsertAsync(log);
 
             return (true, log);
         }
         
         
-        
+        private static SqlConnection DbConnection(string connString) => 
+            new SqlConnection(connString);
     }
 }
