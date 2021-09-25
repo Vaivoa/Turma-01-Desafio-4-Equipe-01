@@ -3,7 +3,7 @@ name: code-analizer
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
  
   workflow_dispatch:
