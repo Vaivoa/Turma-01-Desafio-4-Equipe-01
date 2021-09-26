@@ -11,6 +11,8 @@ Na segunda parte do desafio, criamos uma função de TimeTrigger e utilizamos o 
 - Kibana
 - Kafka
 - Serilog
+- SonarCube
+- Horusec
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
