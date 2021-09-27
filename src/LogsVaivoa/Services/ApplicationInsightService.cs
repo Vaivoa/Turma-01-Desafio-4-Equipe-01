@@ -51,9 +51,12 @@ namespace LogsVaivoa.Services
             
             var log = result?.MapToLog();
 
-            if (log != null)
+            if (log == null)
+            {
                 _log.LogError("Falha ao realizar conversão");
-
+                return;
+            }
+            
             await _elasticService.ElasticClient
                 .IndexAsync(log, idx => 
                     idx.Index(Environment.GetEnvironmentVariable("IndexAI")));

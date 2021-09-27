@@ -21,10 +21,11 @@ namespace LogsVaivoa.Models
             {
                 return tables[0].rows.Select(i =>
                     new LogApplicationInsight(
-                        i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9])
+                        i[0], i[1], i[2], i[3], i[4], i[5], 
+                        i[6], i[7], i[8], i[9])
                 ).First();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

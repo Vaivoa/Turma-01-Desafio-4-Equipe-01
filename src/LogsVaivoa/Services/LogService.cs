@@ -23,7 +23,7 @@ namespace LogsVaivoa.Services
             _logger = logger;
         }
         
-        public async Task<(bool, Object)> PostLog(Log log)
+        public async Task<(bool, object)> PostLog(Log log)
         {
             var errors = log.GetErrors();
             if (errors.Any()) return (false, errors);
