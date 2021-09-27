@@ -9,9 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  with:
-    dotnet-version: '6.0.x'
-    include-prerelease: true   
+  dotnet-version: '6.0.x'
+  include-prerelease: true   
   
 jobs:
   sonarqube-analizer-kafka:
