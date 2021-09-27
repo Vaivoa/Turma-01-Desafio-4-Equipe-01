@@ -26,12 +26,10 @@ namespace LogsVaivoa
     {
         private readonly LogService _logService;
         private readonly ApplicationInsightService _appService;
-        private readonly ILogger<LogsFunction> _logger;
         public LogsFunction(LogService logService, ApplicationInsightService appService, ILogger<LogsFunction> logger)
         {
             _logService = logService;
             _appService = appService;
-            _logger = logger;
         }
 
         [FunctionName("LogsFunction")]
