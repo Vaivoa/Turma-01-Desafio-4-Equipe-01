@@ -9,8 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  dotnet-version: '6.0.x'
-  include-prerelease: true   
+  dotnet-version: '6.0.x'  
   
 jobs:
   sonarqube-analizer-kafka:
@@ -24,6 +23,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          include-prerelease: true 
       - name: Setup sonarqube 
         shell: pwsh
         run: |
