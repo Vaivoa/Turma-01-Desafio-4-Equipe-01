@@ -2,19 +2,6 @@
 {
     public class LogApplicationInsight
     {
-        public LogApplicationInsight(string timestamps, string id, string operationName, string success, string statusCode, string duration, string clientCity, string clientCountry, string clientIp, string clientType)
-        {
-            Timestamps = timestamps;
-            Id = id;
-            OperationName = operationName;
-            Success = success;
-            StatusCode = statusCode;
-            Duration = duration;
-            ClientCity = clientCity;
-            ClientCountry = clientCountry;
-            ClientIP = clientIp;
-            ClientType = clientType;
-        }
 
         public string Timestamps { get; set; }
         public string Id { get; set; }
@@ -28,5 +15,63 @@
         public string ClientIP { get; set; }
 
         public string ClientType { get; set; }
+    }
+
+    public class LogApplicationInsightBuild
+    {
+        private LogApplicationInsight _log = new LogApplicationInsight();
+
+        public LogApplicationInsightBuild Timestamps(string value)
+        {
+            _log.Timestamps = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild Id(string value)
+        {
+            _log.Id = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild OperationName(string value)
+        {
+            _log.OperationName = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild StatusCode(string value)
+        {
+            _log.StatusCode = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild Success(string value)
+        {
+            _log.Success = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild ClientCity(string value)
+        {
+            _log.ClientCity = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild ClientCountry(string value)
+        {
+            _log.ClientCountry = value;
+            return this;
+        }
+        public LogApplicationInsightBuild ClientIP(string value)
+        {
+            _log.ClientIP = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild ClientType(string value)
+        {
+            _log.ClientType = value;
+            return this;
+        } 
+        public LogApplicationInsightBuild Duration(string value)
+        {
+            _log.Duration = value;
+            return this;
+        }
+
+        public LogApplicationInsight Build() => _log;
     }
 }

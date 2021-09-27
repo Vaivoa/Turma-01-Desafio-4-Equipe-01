@@ -12,7 +12,7 @@ namespace LogsVaivoa.Models
             public string name { get; set; }
             public List<List<string>> rows { get; set; }
         }
-        private List<Table> Tables { get; set; }
+         List<Table> Tables { get; }
 
 
         public LogApplicationInsight MapToLog()
@@ -20,10 +20,17 @@ namespace LogsVaivoa.Models
             try
             {
                 return Tables[0].rows.Select(i =>
-                    new LogApplicationInsight(
-                        i[0], i[1], i[2], i[3], i[4], i[5], 
-                        i[6], i[7], i[8], i[9])
-                ).First();
+                    new LogApplicationInsightBuild().Timestamps(i[0])
+                                                    .Id(i[1])
+                                                    .OperationName(i[2])
+                                                    .Success(i[3])
+                                                    .StatusCode(i[4])
+                                                    .Duration(i[5])
+                                                    .ClientCity(i[6])
+                                                    .ClientCountry(i[7])
+                                                    .ClientIP(i[8])
+                                                    .ClientType(i[9]).Build()
+               ).First();
             }
             catch (Exception)
             {
