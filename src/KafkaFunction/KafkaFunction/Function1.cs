@@ -30,7 +30,7 @@ namespace KafkaFunction
                 cts.Cancel();
             };
 
-            
+
 
             try
             {
@@ -38,11 +38,11 @@ namespace KafkaFunction
                 {
                     consumer.Subscribe(nomeTopic);
 
-                    while (true)
+                    for (int i = 0; i < 10; i++)
                     {
                         try
-                    {
-                        
+                        {
+
                             var cr = consumer.Consume(cts.Token);
 
 
@@ -50,14 +50,14 @@ namespace KafkaFunction
 
                             log.LogInformation(
                                 $"Mensagem lida: {cr.Message.Value}");
-                        
+
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            consumer.Close();
+                            log.LogWarning("Cancelada a execução do Consumer...");
+                        }
                     }
-                    catch (OperationCanceledException)
-                    {
-                        consumer.Close();
-                        log.LogWarning("Cancelada a execução do Consumer...");
-                    }
-                }
                 }
             }
             catch (Exception ex)
