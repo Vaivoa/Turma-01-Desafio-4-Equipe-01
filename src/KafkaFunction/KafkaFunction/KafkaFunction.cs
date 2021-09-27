@@ -1,16 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Confluent.Kafka;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
+[assembly: FunctionsStartup(typeof(Startup))]
 namespace KafkaFunction
 {
-    public static class Function1
+    public class KafkaFunction
     {
-        [FunctionName("Function1")]
-        public static void Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
+        private readonly IDistributedCache _cache;
+        public KafkaFunction(IDistributedCache cache)
+        {
+            _cache = cache;
+        }
+
+        [FunctionName("KafkaFunction")]
+        public void Run([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             string bootstrapServers = "localhost:9092/";
@@ -24,29 +34,25 @@ namespace KafkaFunction
                 AutoOffsetReset = AutoOffsetReset.Earliest
             };
             var cts = new CancellationTokenSource();
-            Console.CancelKeyPress += (_, e) =>
-            {
-                e.Cancel = true;
-                cts.Cancel();
-            };
+            cts.CancelAfter(TimeSpan.FromSeconds(10));
 
-
+            var messages = new Dictionary<string, string>();
 
             try
             {
-                using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
+                using (var consumer = new ConsumerBuilder<string, string>(config).Build())
                 {
                     consumer.Subscribe(nomeTopic);
 
-                    for (int i = 0; i < 10; i++)
+                    while (!cts.IsCancellationRequested)
                     {
                         try
                         {
-
                             var cr = consumer.Consume(cts.Token);
 
+                            messages.Add($"{cr.Message.Key}:{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}", cr.Message.Value);
 
-                            log.LogInformation($"Offset: {cr.Offset}  OffsetPartition: {cr.TopicPartitionOffset}");
+                            log.LogInformation($"Offset: OffsetPartition: {cts.IsCancellationRequested}");
 
                             log.LogInformation(
                                 $"Mensagem lida: {cr.Message.Value}");
@@ -57,14 +63,28 @@ namespace KafkaFunction
                             consumer.Close();
                             log.LogWarning("Cancelada a execução do Consumer...");
                         }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+
+                        cts.CancelAfter(TimeSpan.FromSeconds(2));
                     }
                 }
+
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                log.LogError($"Exceção: {ex.GetType().FullName} | " +
-                             $"Mensagem: {ex.Message}");
+
+                throw;
             }
+
+
+            foreach (var message in messages)
+            {
+                 _cache.SetString(message.Key, message.Value);
+            }
+
 
         }
     }
