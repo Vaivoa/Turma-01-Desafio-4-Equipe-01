@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LogsVaivoa.Services;
 
 namespace LogsVaivoa.Models
 {
@@ -12,7 +11,7 @@ namespace LogsVaivoa.Models
             public string name { get; set; }
             public List<List<string>> rows { get; set; }
         }
-         List<Table> Tables { get; }
+        List<Table> Tables { get; } = new List<Table>();
 
 
         public LogApplicationInsight MapToLog()

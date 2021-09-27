@@ -19,7 +19,7 @@
 
     public class LogApplicationInsightBuild
     {
-        private LogApplicationInsight _log = new LogApplicationInsight();
+        private readonly LogApplicationInsight _log = new LogApplicationInsight();
 
         public LogApplicationInsightBuild Timestamps(string value)
         {
