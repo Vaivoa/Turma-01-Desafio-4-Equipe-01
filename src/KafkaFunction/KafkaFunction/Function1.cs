@@ -30,16 +30,19 @@ namespace KafkaFunction
                 cts.Cancel();
             };
 
+            
+
             try
             {
                 using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
                 {
                     consumer.Subscribe(nomeTopic);
-                    
-                    try
+
+                    while (true)
                     {
-                        while (true)
-                        {
+                        try
+                    {
+                        
                             var cr = consumer.Consume(cts.Token);
 
 
@@ -47,13 +50,14 @@ namespace KafkaFunction
 
                             log.LogInformation(
                                 $"Mensagem lida: {cr.Message.Value}");
-                        }
+                        
                     }
                     catch (OperationCanceledException)
                     {
                         consumer.Close();
                         log.LogWarning("Cancelada a execução do Consumer...");
                     }
+                }
                 }
             }
             catch (Exception ex)
