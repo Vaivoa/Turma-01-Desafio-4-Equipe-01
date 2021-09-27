@@ -33,6 +33,6 @@ jobs:
         shell: pwsh
         run: |
           cd "./src/KafkaFunction"
-          dotnet sonarscanner begin /k:"KafkaFunction" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}} 
+          dotnet sonarscanner begin /k:"kafkavaivoaturma1" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}} 
           dotnet build
           dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}}
