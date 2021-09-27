@@ -11,7 +11,8 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: logs-vaivoa-turma1  
   AZURE_FUNCTIONAPP_PACKAGE_PATH: src/LogsVaivoa    
-  DOTNET_VERSION: '3.x'          
+  DOTNET_VERSION: '3.x' 
+  DOTNET_VERSION_6: '6.x'        
   
 jobs:
   horusec-security:
@@ -47,3 +48,26 @@ jobs:
         dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}} 
         dotnet build
         dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
+ sonarqube-analizer:
+    needs: [horusec-security]
+    runs-on: windows-latest
+    environment: dev
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION_6 }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION_6 }}
+    - name: Setup sonarqube 
+      shell: pwsh
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+    - name: Run Sonarqube scanner
+      shell: pwsh
+      run: |
+        cd "./src/KafkaFunction"
+        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}} 
+        dotnet build
+        dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}}
