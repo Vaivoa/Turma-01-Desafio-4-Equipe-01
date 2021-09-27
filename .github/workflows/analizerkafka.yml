@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '5.x'        
+  DOTNET_VERSION: '6'        
   
 jobs:
   sonarqube-analizer-kafka:
