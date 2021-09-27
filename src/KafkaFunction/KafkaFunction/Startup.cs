@@ -11,8 +11,8 @@ public class Startup : IWebJobsStartup
     {
         builder.Services.AddStackExchangeRedisCache(options =>
         {
-            options.InstanceName = "test";
-            options.Configuration = "localhost:6379";
+            options.InstanceName = "KafkaMessage";
+            options.Configuration = "kafkaredisvaivoa.redis.cache.windows.net:6380,password=1vwDwc3owbVeMgGyg5jSD2f6kB1xe2Wb1Ai1ovyPnLY=,ssl=True,abortConnect=False";
         });
     }
 }

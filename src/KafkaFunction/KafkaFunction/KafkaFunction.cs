@@ -20,7 +20,7 @@ namespace KafkaFunction
         }
 
         [FunctionName("KafkaFunction")]
-        public void Run([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer, ILogger log)
+        public void Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             string bootstrapServers = "localhost:9092/";
@@ -36,53 +36,49 @@ namespace KafkaFunction
             var cts = new CancellationTokenSource();
             cts.CancelAfter(TimeSpan.FromSeconds(10));
 
-            var messages = new Dictionary<string, string>();
 
-            try
+
+            var messages = new List<(string, string)>();
+
+
+            using var consumer = new ConsumerBuilder<string, string>(config).Build();
+
+            consumer.Subscribe(nomeTopic);
+
+            while (!cts.IsCancellationRequested)
             {
-                using (var consumer = new ConsumerBuilder<string, string>(config).Build())
+                try
                 {
-                    consumer.Subscribe(nomeTopic);
+                    var cr = consumer.Consume(cts.Token);
 
-                    while (!cts.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            var cr = consumer.Consume(cts.Token);
+                    messages.Add((cr.Message.Key, cr.Message.Value));
 
-                            messages.Add($"{cr.Message.Key}:{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}", cr.Message.Value);
+                    log.LogInformation($"Offset: OffsetPartition: {cts.IsCancellationRequested}");
 
-                            log.LogInformation($"Offset: OffsetPartition: {cts.IsCancellationRequested}");
+                    log.LogInformation(
+                        $"Mensagem lida: {cr.Message.Value}");
 
-                            log.LogInformation(
-                                $"Mensagem lida: {cr.Message.Value}");
-
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            consumer.Close();
-                            log.LogWarning("Cancelada a execução do Consumer...");
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message);
-                        }
-
-                        cts.CancelAfter(TimeSpan.FromSeconds(2));
-                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    consumer.Close();
+                    log.LogWarning("Cancelada a execução do Consumer...");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
                 }
 
+                cts.CancelAfter(TimeSpan.FromSeconds(2));
             }
-            catch (Exception)
-            {
 
-                throw;
-            }
+
 
 
             foreach (var message in messages)
             {
-                 _cache.SetString(message.Key, message.Value);
+                var (key, value) = message;
+                _cache.SetString($"{key}:{DateTime.Now:dd/MM/yyyy HH:mm:ss}", value);
             }
 
 
