@@ -2,7 +2,7 @@ name: code-analizer-kafka
 
 
 on:
-  pull_request:
+  commit:
     branches: [ main, develop ]
 
  
