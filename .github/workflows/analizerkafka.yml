@@ -13,7 +13,6 @@ env:
   
 jobs:
   sonarqube-analizer-kafka:
-      needs: [sonarqube-analizer]
       runs-on: windows-latest
       environment: dev
       steps:
