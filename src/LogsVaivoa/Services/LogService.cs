@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using LogsVaivoa.Models;

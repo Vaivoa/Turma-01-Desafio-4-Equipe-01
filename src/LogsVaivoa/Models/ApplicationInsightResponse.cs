@@ -12,14 +12,14 @@ namespace LogsVaivoa.Models
             public string name { get; set; }
             public List<List<string>> rows { get; set; }
         }
-        public List<Table> tables { get; set; }
+        private List<Table> Tables { get; set; }
 
 
         public LogApplicationInsight MapToLog()
         {
             try
             {
-                return tables[0].rows.Select(i =>
+                return Tables[0].rows.Select(i =>
                     new LogApplicationInsight(
                         i[0], i[1], i[2], i[3], i[4], i[5], 
                         i[6], i[7], i[8], i[9])
