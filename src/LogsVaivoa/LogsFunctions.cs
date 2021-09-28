@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using FluentValidation;
 using FluentValidation.Results;
 using LogsVaivoa;
+using LogsVaivoa.Interface;
 using LogsVaivoa.Models;
 using LogsVaivoa.Services;
 using Microsoft.AspNetCore.Http;
@@ -20,13 +19,11 @@ using Newtonsoft.Json;
 [assembly: WebJobsStartup(typeof(Startup))]
 namespace LogsVaivoa
 {
-    
-
     public class LogsFunction
     {
-        private readonly LogService _logService;
-        private readonly ApplicationInsightService _appService;
-        public LogsFunction(LogService logService, ApplicationInsightService appService, ILogger<LogsFunction> logger)
+        private readonly ILogService _logService;
+        private readonly IApplicationInsightService _appService;
+        public LogsFunction(ILogService logService, IApplicationInsightService appService, ILogger<LogsFunction> logger)
         {
             _logService = logService;
             _appService = appService;

@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using LogsVaivoa.Interface;
 using LogsVaivoa.Models;
 using Microsoft.Extensions.Logging;
-using Nest;
 
 namespace LogsVaivoa.Services
 {
-    public class LogService
+    public class LogService : ILogService
     {
-        private readonly string _sqlConnection;
-        private readonly ElasticsearchService _elasticService;
+        private static readonly string IndexLog = Environment.GetEnvironmentVariable("IndexLog");
+        private readonly IElasticsearchService _elasticService;
         private readonly ILogger<LogService> _logger;
-        public LogService(ElasticsearchService elasticService, ILogger<LogService> logger)
+        private readonly SqlConnection _db;
+        public LogService(IElasticsearchService elasticService, ILogger<LogService> logger, IDbContext dbContext)
         {
-            _sqlConnection = Environment.GetEnvironmentVariable("SqlConnection");
             _elasticService = elasticService;
             _logger = logger;
+            _db = dbContext.GetDbConnection();
         }
         
         public async Task<(bool, object)> PostLog(Log log)
         {
-            var errors = log.GetErrors();
-            if (errors.Any()) return (false, errors);
+            if (!log.IsValid()) return (false, log.GetErrors());
 
-            await SendLogElastic(log);
+            await _elasticService.SendToElastic(log, IndexLog);
           
             var resultDb= await InsertLogDb(log);
 
@@ -35,10 +34,9 @@ namespace LogsVaivoa.Services
 
         private async Task<bool> InsertLogDb(Log log)
         {
-            await using var db = DbConnection(_sqlConnection);
             try
             {
-                await db.InsertAsync(log);
+                await _db.InsertAsync(log);
                 return true;
             }
             catch (Exception e)
@@ -48,17 +46,5 @@ namespace LogsVaivoa.Services
             }
         }
 
-        private async Task SendLogElastic(Log log)
-        {
-            var resultElastic = await _elasticService.ElasticClient
-                .IndexAsync(log, idx => idx.Index(Environment.GetEnvironmentVariable("IndexAI")));
-
-            if(resultElastic.Result == Result.Error)
-                _logger.LogError("Falha ao enviar log para o elasticsearch");
-        }
-        
-        
-        private static SqlConnection DbConnection(string connString) => 
-            new SqlConnection(connString);
     }
 }

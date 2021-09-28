@@ -2,25 +2,26 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using LogsVaivoa.Interface;
 using LogsVaivoa.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace LogsVaivoa.Services
 {
-    public class ApplicationInsightService
+    public class ApplicationInsightService : IApplicationInsightService
     {
-        private readonly ElasticsearchService _elasticService;
-        private readonly string _urlApplicationInsights;
+        private static readonly string UrlApplicationInsights = Environment.GetEnvironmentVariable("UrlApplicationInsights");
+        private static readonly string IndexAI = Environment.GetEnvironmentVariable("IndexAI");
+        private readonly IElasticsearchService _elasticService;
         private readonly HttpClient _httpClient;
         private readonly ILogger<ApplicationInsightService> _log;
 
-        public ApplicationInsightService(ElasticsearchService elasticService, ILogger<ApplicationInsightService> log)
+        public ApplicationInsightService(IElasticsearchService elasticService, ILogger<ApplicationInsightService> log)
         {
-            _urlApplicationInsights = Environment.GetEnvironmentVariable("UrlApplicationInsights");
+            _httpClient = new HttpClient();
             _elasticService = elasticService;
             _log = log;
-            _httpClient = new HttpClient();
         }
         private ApplicationInsightResponse GetLogApp()
         {
@@ -28,7 +29,7 @@ namespace LogsVaivoa.Services
 
             _httpClient.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("ApiKey")!);
             
-            var response = _httpClient.GetAsync(_urlApplicationInsights).Result;
+            var response = _httpClient.GetAsync(UrlApplicationInsights).Result;
 
             if (!response.IsSuccessStatusCode)
             {
@@ -49,17 +50,15 @@ namespace LogsVaivoa.Services
             var log = result?.MapToLog();
 
             if (log == null)
+                _log.LogError("Falha ao realizar conversão das métricas do aplication insight");
+            else
             {
-                _log.LogError("Falha ao realizar conversão");
-                return;
+                var resultElastic = await _elasticService.SendToElastic(log, IndexAI);
+
+                if (!resultElastic)
+                    _log.LogError("Falha ao salvar metricas do aplication insight no elasticsearch");
             }
-            
-            await _elasticService.ElasticClient
-                .IndexAsync(log, idx => 
-                    idx.Index(Environment.GetEnvironmentVariable("IndexAI")));
-            
         }
 
     }
-    
 }
