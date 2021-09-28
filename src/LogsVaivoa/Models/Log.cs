@@ -13,7 +13,7 @@ namespace LogsVaivoa.Models
         private List<ValidationFailure> _errors; 
         
         public List<ValidationFailure> GetErrors() => _errors ??= new LogModelValidation().Validate(this).Errors;
-        public bool IsValid => !GetErrors().Any();
+        public bool IsValid() => !GetErrors().Any();
     }
 
     public class LogModelValidation : AbstractValidator<Log>

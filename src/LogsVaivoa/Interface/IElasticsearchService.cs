@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using LogsVaivoa.Models;
 
 namespace LogsVaivoa.Interface
 {

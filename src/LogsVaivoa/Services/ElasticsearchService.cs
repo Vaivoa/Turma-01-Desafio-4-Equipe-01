@@ -9,9 +9,9 @@ namespace LogsVaivoa.Services
     {
         private ElasticClient _elasticClient;
 
-        public ElasticsearchService(string elasticsearchUrl)
+        public ElasticsearchService()
         {
-            var uriElastic = new Uri(elasticsearchUrl);
+            var uriElastic = new Uri(Environment.GetEnvironmentVariable("ElkConnection")!);
             var elasticsearchSettings = new ConnectionSettings(uriElastic);
             _elasticClient = new ElasticClient(elasticsearchSettings);
         }

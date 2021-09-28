@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using LogsVaivoa.Interface;
 using LogsVaivoa.Models;
 using Microsoft.Extensions.Logging;
-using Nest;
 
 namespace LogsVaivoa.Services
 {
@@ -25,7 +23,7 @@ namespace LogsVaivoa.Services
         
         public async Task<(bool, object)> PostLog(Log log)
         {
-            if (!log.IsValid) return (false, log.GetErrors());
+            if (!log.IsValid()) return (false, log.GetErrors());
 
             await _elasticService.SendToElastic(log, IndexLog);
           
