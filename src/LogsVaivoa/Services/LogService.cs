@@ -3,13 +3,14 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using LogsVaivoa.Interface;
 using LogsVaivoa.Models;
 using Microsoft.Extensions.Logging;
 using Nest;
 
 namespace LogsVaivoa.Services
 {
-    public class LogService
+    public class LogService : ILogService
     {
         private readonly string _sqlConnection;
         private readonly ElasticsearchService _elasticService;
@@ -50,10 +51,9 @@ namespace LogsVaivoa.Services
 
         private async Task SendLogElastic(Log log)
         {
-            var resultElastic = await _elasticService.ElasticClient
-                .IndexAsync(log, idx => idx.Index(Environment.GetEnvironmentVariable("IndexAI")));
+            var result = await _elasticService.SendToElastic(log, Environment.GetEnvironmentVariable("IndexLog"));
 
-            if(resultElastic.Result == Result.Error)
+            if(!result)
                 _logger.LogError("Falha ao enviar log para o elasticsearch");
         }
         

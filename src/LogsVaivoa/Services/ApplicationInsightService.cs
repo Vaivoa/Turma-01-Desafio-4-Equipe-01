@@ -48,16 +48,16 @@ namespace LogsVaivoa.Services
             
             var log = result?.MapToLog();
 
-            if (log == null)
+            if (log != null)
             {
-                _log.LogError("Falha ao realizar conversão");
-                return;
+                var resultElastic = await _elasticService
+                    .SendToElastic(log, Environment.GetEnvironmentVariable("IndexAI"));
+
+                if (!resultElastic)
+                    _log.LogError("Falha ao salvar metricas do aplication insight no elasticsearch");
             }
-            
-            await _elasticService.ElasticClient
-                .IndexAsync(log, idx => 
-                    idx.Index(Environment.GetEnvironmentVariable("IndexAI")));
-            
+            else
+                _log.LogError("Falha ao realizar conversão das métricas do aplication insight");
         }
 
     }
