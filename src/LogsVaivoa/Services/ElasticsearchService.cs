@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LogsVaivoa.Interface;
-using LogsVaivoa.Models;
 using Nest;
 
 namespace LogsVaivoa.Services
@@ -17,7 +16,7 @@ namespace LogsVaivoa.Services
             _elasticClient = new ElasticClient(elasticsearchSettings);
         }
 
-        public async Task<bool> SendToElastic(Log log, string index)
+        public async Task<bool> SendToElastic<T>(T log, string index) where T : class
         {
             var resultElastic = await _elasticClient
                 .IndexAsync(log, idx => idx.Index(index));
@@ -25,13 +24,6 @@ namespace LogsVaivoa.Services
             return resultElastic.IsValid;
         }
         
-        public async Task<bool> SendToElastic(LogApplicationInsight log, string index)
-        {
-            var resultElastic = await _elasticClient
-                .IndexAsync(log, idx => idx.Index(index));
-
-            return resultElastic.IsValid;
-        }
         
     }
     
