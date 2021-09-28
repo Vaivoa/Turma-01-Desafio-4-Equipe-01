@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LogsVaivoa.Services
 {
-    public class ApplicationInsightService
+    public class ApplicationInsightService : IApplicationInsightService
     {
         private static readonly string UrlApplicationInsights = Environment.GetEnvironmentVariable("UrlApplicationInsights");
         private static readonly string IndexAI = Environment.GetEnvironmentVariable("IndexAI");
@@ -61,5 +61,4 @@ namespace LogsVaivoa.Services
         }
 
     }
-    
 }

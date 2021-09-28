@@ -14,7 +14,7 @@ namespace LogsVaivoa
             builder.Services.AddScoped<IElasticsearchService, ElasticsearchService>();
 
             builder.Services.AddScoped<ILogService, LogService>();
-            builder.Services.AddScoped<ApplicationInsightService>();
+            builder.Services.AddScoped<IApplicationInsightService, ApplicationInsightService>();
             builder.Services.AddSingleton<IDbContext, DbContext>();
             builder.Services.AddLogging();
             

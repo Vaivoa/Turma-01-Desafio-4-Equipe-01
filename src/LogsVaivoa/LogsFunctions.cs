@@ -22,8 +22,8 @@ namespace LogsVaivoa
     public class LogsFunction
     {
         private readonly ILogService _logService;
-        private readonly ApplicationInsightService _appService;
-        public LogsFunction(ILogService logService, ApplicationInsightService appService, ILogger<LogsFunction> logger)
+        private readonly IApplicationInsightService _appService;
+        public LogsFunction(ILogService logService, IApplicationInsightService appService, ILogger<LogsFunction> logger)
         {
             _logService = logService;
             _appService = appService;
