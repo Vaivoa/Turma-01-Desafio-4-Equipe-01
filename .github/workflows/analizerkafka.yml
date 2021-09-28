@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '6.x'  
+  DOTNET_VERSION: "6.x"
   
 jobs:
   sonarqube-analizer-kafka:
@@ -22,8 +22,13 @@ jobs:
       - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.x, 5.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
           include-prerelease: true
+          
+      - name: Setup DotNet 5.0 Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
 
       - name: Setup sonarqube 
         shell: pwsh
