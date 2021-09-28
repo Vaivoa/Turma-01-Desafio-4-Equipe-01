@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -9,10 +10,10 @@ namespace LogsVaivoa.Models
         public string Nome { get; set; }
         public string Mensagem { get; set; }
         public string Detalhe { get; set; }
-
-
-        public List<ValidationFailure> GetErrors() => new LogModelValidation().Validate(this).Errors;
-
+        private List<ValidationFailure> _errors; 
+        
+        public List<ValidationFailure> GetErrors() => _errors ??= new LogModelValidation().Validate(this).Errors;
+        public bool IsValid() => !GetErrors().Any();
     }
 
     public class LogModelValidation : AbstractValidator<Log>
