@@ -14,6 +14,26 @@ env:
   DOTNET_VERSION: '3.x'   
   
 jobs:
+  testes-xUnit:
+    name: Ambiente de Testes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['5.0.x']
+
+    steps:
+    
+      - name: Enviar repositório e configurar o ambiente
+        uses: actions/checkout@v2
+        
+      - name: Instalar o .NET Core SDK ${{ matrix.dotnet-version }} (dotnet)
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          
+      - name: Executar os testes de unidade e integração
+        run: dotnet test "/test/Logs.Test"
+    
   horusec-security:
       name: horusec-security
       runs-on: ubuntu-latest
@@ -44,6 +64,6 @@ jobs:
       shell: pwsh
       run: |
         cd "./src/LogsVaivoa"
-        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}} 
+        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
         dotnet build
         dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
