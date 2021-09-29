@@ -112,4 +112,4 @@ jobs:
 [![Linkedin Badge]( https://img.shields.io/badge/Yuri%20Dias-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/yuri-dias/)
 [![Linkedin Badge]( https://img.shields.io/badge/Leandro%20Gomes-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/leandro-gomes/)
 [![Linkedin Badge]( https://img.shields.io/badge/Anderson%20Silva-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/anderson-marques-da-silva-62b3b1136/)
-[![Linkedin Badge]( https://img.shields.io/badge/Breno%20Silva-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/breno-silva-fortunato/)
+[![Linkedin Badge]( https://img.shields.io/badge/Breno%20Fortunato-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/breno-silva-fortunato/)
