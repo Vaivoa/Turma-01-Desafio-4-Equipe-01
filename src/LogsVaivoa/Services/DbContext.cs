@@ -9,13 +9,13 @@ namespace LogsVaivoa.Services
     class DbContext : IDbContext
     {
         private readonly string _dbconnection;
-        private SqlConnection _sqlConnection; 
+        private SqlConnection _sqlConnection;
 
         public DbContext()
         {
             _dbconnection = Environment.GetEnvironmentVariable("SqlConnection");
         }
-        public IDbConnection GetDbConnection()
+        public SqlConnection GetDbConnection()
         {
             return new SqlConnection(_dbconnection);
         }
