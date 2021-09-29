@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['5.0.x']
+        dotnet-version: ['3.x']
 
     steps:
     
@@ -32,7 +32,9 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
           
       - name: Executar os testes de unidade e integração
-        run: dotnet test "./test/Logs.Test"
+        run: 
+            cd "./test/Logs.Test"
+            dotnet test 
     
   horusec-security:
       name: horusec-security
