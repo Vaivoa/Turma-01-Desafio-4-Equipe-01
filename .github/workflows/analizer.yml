@@ -1,9 +1,9 @@
-name: code-analizer
+name: code-analizer-logs
 
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
  
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: logs-vaivoa-turma1  
   AZURE_FUNCTIONAPP_PACKAGE_PATH: src/LogsVaivoa    
-  DOTNET_VERSION: '3.x'          
+  DOTNET_VERSION: '3.x'   
   
 jobs:
   horusec-security:

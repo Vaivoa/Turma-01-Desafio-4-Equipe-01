@@ -1,32 +1,50 @@
 ﻿using System;
-using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
+using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using LogsVaivoa.Interface;
+using LogsVaivoa.Models;
+using Microsoft.Extensions.Logging;
 
 namespace LogsVaivoa.Services
 {
-    public static class LogService
+    public class LogService : ILogService
     {
-        private static SqlConnection DbConnection()
+        private static readonly string IndexLog = Environment.GetEnvironmentVariable("IndexLog");
+        private readonly IElasticsearchService _elasticService;
+        private readonly ILogger<LogService> _logger;
+        private readonly IDbContext _dbContext;
+        public LogService(IElasticsearchService elasticService, ILogger<LogService> logger, IDbContext dbContext)
         {
-            return new SqlConnection(Environment.GetEnvironmentVariable("SqlConnection"));
+            _elasticService = elasticService;
+            _logger = logger;
+            _dbContext = dbContext;
         }
-
-        public static (bool, object) InsertLog(Log log)
+        
+        public async Task<(bool, object)> PostLog(Log log)
         {
-            var errors = log.GetErrors();
+            if (!log.IsValid()) return (false, log.GetErrors());
 
-            if (errors.Any()) return (false, errors);
-
-            using var db = DbConnection();
-            db.Insert(log);
+            await _elasticService.SendToElastic(log, IndexLog);
+          
+            InsertLogDb(log);
 
             return (true, log);
         }
-        
-        
-        
+
+        private void InsertLogDb(Log log)
+        {
+            using var db = _dbContext.GetDbConnection();
+            try
+            { 
+                db.Insert(log);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw;
+            }
+        }
+
     }
 }

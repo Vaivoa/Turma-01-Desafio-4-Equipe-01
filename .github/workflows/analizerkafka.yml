@@ -1,0 +1,43 @@
+name: code-analizer-kafka
+
+
+on:
+  push:
+    branches: [ main, develop ]
+
+ 
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "6.x"
+  
+jobs:
+  sonarqube-analizer-kafka:
+      runs-on: windows-latest
+      environment: dev
+      steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          include-prerelease: true
+          
+      - name: Setup DotNet 5.0 Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Setup sonarqube 
+        shell: pwsh
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+      - name: Run Sonarqube scanner
+        shell: pwsh
+        run: |
+          cd "./src/KafkaFunction"
+          dotnet sonarscanner begin /k:"kafkavaivoaturma1" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}} 
+          dotnet build
+          dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_KAFKA_TOKEN}}
