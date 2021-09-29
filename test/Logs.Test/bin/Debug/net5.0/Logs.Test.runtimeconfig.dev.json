@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "C:\\Users\\Vaivoa\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\Vaivoa\\.nuget\\packages"
-    ]
-  }
-}
