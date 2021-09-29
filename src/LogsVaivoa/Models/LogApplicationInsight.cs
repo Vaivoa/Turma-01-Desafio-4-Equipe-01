@@ -70,7 +70,8 @@ namespace LogsVaivoa.Models
         } 
         public LogApplicationInsightBuild Duration(string value)
         {
-            _log.Duration = double.Parse(value);
+            var replace = value.Replace('.', ',');
+            _log.Duration = double.Parse(replace);
             return this;
         }
 
