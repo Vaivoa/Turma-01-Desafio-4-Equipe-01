@@ -2,7 +2,7 @@ name: code-analizer-logs
 
 
 on:
-  pull_request:
+  push:
     branches: [ main, develop ]
 
  
