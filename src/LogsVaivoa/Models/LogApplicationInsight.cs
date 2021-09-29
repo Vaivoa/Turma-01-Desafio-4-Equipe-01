@@ -1,4 +1,6 @@
-﻿namespace LogsVaivoa.Models
+﻿using System;
+
+namespace LogsVaivoa.Models
 {
     public class LogApplicationInsight
     {
@@ -8,7 +10,7 @@
         public string OperationName { get; set; }
         public string Success { get; set; }
         public string StatusCode { get; set; }
-        public string Duration { get; set; }
+        public double Duration { get; set; }
 
         public string ClientCity { get; set; }
         public string ClientCountry { get; set; }
@@ -68,7 +70,7 @@
         } 
         public LogApplicationInsightBuild Duration(string value)
         {
-            _log.Duration = value;
+            _log.Duration = double.Parse(value);
             return this;
         }
 
