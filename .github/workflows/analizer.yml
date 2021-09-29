@@ -32,8 +32,9 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
           
       - name: Executar os testes de unidade e integração
-        run: 
-            cd "./test/Logs.Test"
+        run: |
+            cd test
+            cd Logs.Test
             dotnet test 
     
   horusec-security:
