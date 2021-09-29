@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -49,8 +50,10 @@ namespace LogsVaivoa.Services
             
             var logs = result?.MapToLog();
 
-            if (logs == null)
+            if (logs == null || logs.Any(i => i == null))
+            {
                 _log.LogError("Falha ao realizar conversão das métricas do aplication insight");
+            }
             else
             {
                 foreach (var log in logs)
@@ -58,7 +61,9 @@ namespace LogsVaivoa.Services
                     var resultElastic = await _elasticService.SendToElastic(log, IndexAI);
 
                     if (!resultElastic)
+                    {
                         _log.LogError("Falha ao salvar metricas do aplication insight no elasticsearch");
+                    }
                 }
             }
         }
