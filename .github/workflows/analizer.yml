@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ['3.x']
+        dotnet-version: ['5.0.x']
 
     steps:
     
