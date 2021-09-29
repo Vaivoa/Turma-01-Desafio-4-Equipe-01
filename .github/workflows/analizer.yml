@@ -32,7 +32,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
           
       - name: Executar os testes de unidade e integração
-        run: dotnet test "/test/Logs.Test"
+        run: dotnet test "./test/Logs.Test"
     
   horusec-security:
       name: horusec-security
