@@ -1,4 +1,6 @@
 using System;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using LogsVaivoa.Interface;
 
@@ -13,9 +15,9 @@ namespace LogsVaivoa.Services
         {
             _dbconnection = Environment.GetEnvironmentVariable("SqlConnection");
         }
-        public SqlConnection GetDbConnection()
+        public IDbConnection GetDbConnection()
         {
-            return _sqlConnection ??= new SqlConnection(_dbconnection);
+            return new SqlConnection(_dbconnection);
         }
     }
 }

@@ -13,12 +13,12 @@ namespace LogsVaivoa.Services
         private static readonly string IndexLog = Environment.GetEnvironmentVariable("IndexLog");
         private readonly IElasticsearchService _elasticService;
         private readonly ILogger<LogService> _logger;
-        private readonly SqlConnection _db;
+        private readonly IDbContext _dbContext;
         public LogService(IElasticsearchService elasticService, ILogger<LogService> logger, IDbContext dbContext)
         {
             _elasticService = elasticService;
             _logger = logger;
-            _db = dbContext.GetDbConnection();
+            _dbContext = dbContext;
         }
         
         public async Task<(bool, object)> PostLog(Log log)
@@ -27,17 +27,17 @@ namespace LogsVaivoa.Services
 
             await _elasticService.SendToElastic(log, IndexLog);
           
-            var resultDb= await InsertLogDb(log);
+            InsertLogDb(log);
 
-            return (resultDb, log);
+            return (true, log);
         }
 
-        private async Task<bool> InsertLogDb(Log log)
+        private void InsertLogDb(Log log)
         {
+            using var db = _dbContext.GetDbConnection();
             try
-            {
-                await _db.InsertAsync(log);
-                return true;
+            { 
+                db.Insert(log);
             }
             catch (Exception e)
             {
