@@ -44,6 +44,7 @@ jobs:
       shell: pwsh
       run: |
         cd "./src/LogsVaivoa"
-        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}} 
+        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
+        dotnet test "../../test/Logs.Test"
         dotnet build
         dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
