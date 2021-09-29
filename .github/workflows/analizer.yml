@@ -23,6 +23,7 @@ jobs:
       - name: Enviar repositório e configurar o ambiente
         uses: actions/checkout@v2
         
+        
       - name: Instalar o .NET Core SDK ${{ matrix.dotnet-version }} (dotnet)
         uses: actions/setup-dotnet@v1.7.2
         with:
