@@ -47,16 +47,19 @@ namespace LogsVaivoa.Services
         {
             var result = GetLogApp();
             
-            var log = result?.MapToLog();
+            var logs = result?.MapToLog();
 
-            if (log == null)
+            if (logs == null)
                 _log.LogError("Falha ao realizar conversão das métricas do aplication insight");
             else
             {
-                var resultElastic = await _elasticService.SendToElastic(log, IndexAI);
+                foreach (var log in logs)
+                {
+                    var resultElastic = await _elasticService.SendToElastic(log, IndexAI);
 
-                if (!resultElastic)
-                    _log.LogError("Falha ao salvar metricas do aplication insight no elasticsearch");
+                    if (!resultElastic)
+                        _log.LogError("Falha ao salvar metricas do aplication insight no elasticsearch");
+                }
             }
         }
 

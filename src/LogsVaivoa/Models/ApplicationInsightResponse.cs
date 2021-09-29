@@ -24,7 +24,7 @@ namespace LogsVaivoa.Models
         
 
 
-        public LogApplicationInsight MapToLog()
+        public List<LogApplicationInsight> MapToLog()
         {
             try
             {
@@ -39,7 +39,7 @@ namespace LogsVaivoa.Models
                                                     .ClientCountry(i[7])
                                                     .ClientIP(i[8])
                                                     .ClientType(i[9]).Build()
-               ).First();
+               ).ToList();
             }
             catch (Exception)
             {
