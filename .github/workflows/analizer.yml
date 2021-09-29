@@ -14,27 +14,6 @@ env:
   DOTNET_VERSION: '3.x'   
   
 jobs:
-  testes-xUnit:
-    name: Ambiente de Testes
-    runs-on: ubuntu-latest
-
-    steps:
-    
-      - name: Enviar repositório e configurar o ambiente
-        uses: actions/checkout@v2
-        
-        
-      - name: Instalar o .NET Core SDK ${{ matrix.dotnet-version }} (dotnet)
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-          
-      - name: Executar os testes de unidade e integração
-        run: |
-            cd test
-            cd Logs.Test
-            dotnet test 
-    
   horusec-security:
       name: horusec-security
       runs-on: ubuntu-latest
