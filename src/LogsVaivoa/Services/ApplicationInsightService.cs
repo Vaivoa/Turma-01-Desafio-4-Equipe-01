@@ -27,7 +27,7 @@ namespace LogsVaivoa.Services
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("ApiKey")!);
+            _httpClient.DefaultRequestHeaders.Add("x-api-key", Environment.GetEnvironmentVariable("ApiKey"));
             
             var response = _httpClient.GetAsync(UrlApplicationInsights).Result;
 

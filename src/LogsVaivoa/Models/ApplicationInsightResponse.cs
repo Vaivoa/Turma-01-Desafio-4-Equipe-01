@@ -6,19 +6,29 @@ namespace LogsVaivoa.Models
 {
     public class ApplicationInsightResponse
     {
+        public class Column
+        {
+            public string name { get; set; }
+            public string type { get; set; }
+        }
+
         public class Table
         {
             public string name { get; set; }
+            public List<Column> columns { get; set; }
             public List<List<string>> rows { get; set; }
         }
-        List<Table> Tables { get; } = new List<Table>();
+
+       
+        public List<Table> tables { get; set; }
+        
 
 
         public LogApplicationInsight MapToLog()
         {
             try
             {
-                return Tables[0].rows.Select(i =>
+                return tables[0].rows.Select(i =>
                     new LogApplicationInsightBuild().Timestamps(i[0])
                                                     .Id(i[1])
                                                     .OperationName(i[2])
