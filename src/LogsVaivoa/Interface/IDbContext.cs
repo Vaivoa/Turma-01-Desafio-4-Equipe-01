@@ -1,9 +1,10 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace LogsVaivoa.Interface
 {
     public interface IDbContext
     {
-        public SqlConnection GetDbConnection();
+        public IDbConnection GetDbConnection();
     }
 }

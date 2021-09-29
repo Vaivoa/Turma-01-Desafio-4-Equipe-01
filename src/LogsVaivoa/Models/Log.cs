@@ -10,8 +10,15 @@ namespace LogsVaivoa.Models
         public string Nome { get; set; }
         public string Mensagem { get; set; }
         public string Detalhe { get; set; }
-        private List<ValidationFailure> _errors; 
-        
+        private List<ValidationFailure> _errors;
+
+        public Log(string nome, string mensagem, string detalhe)
+        {
+            Nome = nome;
+            Mensagem = mensagem;
+            Detalhe = detalhe;
+        }
+
         public List<ValidationFailure> GetErrors() => _errors ??= new LogModelValidation().Validate(this).Errors;
         public bool IsValid() => !GetErrors().Any();
     }
