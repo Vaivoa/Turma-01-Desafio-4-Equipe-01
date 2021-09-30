@@ -54,5 +54,5 @@ jobs:
         dotnet sonarscanner begin /k:"Logs" /d:sonar.cs.opencover.reportsPaths="opencover.xml" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
         dotnet build
         dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover  /p:CoverletOutput=coverage /p:Exclude=[xunit.*]* ./LogsVaivoa.sln
-        move ..\..\test\Logs.Test\coverage.opencover.xml opencover.xml 
+        move ..\..\test\Logs.Test\coverage.opencover.xml opencover.xml -force
         dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
