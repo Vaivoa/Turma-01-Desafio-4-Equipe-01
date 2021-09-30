@@ -13,6 +13,9 @@ local.settings.json
 .idea
 .sonarqube
 
+src/LogsVaivoa/opencover.xml
+test/Logs.Test/opencover.xml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
