@@ -16,23 +16,6 @@ env:
 
 
 jobs:
-  test:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup .NET Core SDK 3.1
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: '3.x'
-      - name: Install dependencies
-        shell: pwsh
-        run: dotnet restore
-      - name: Build
-        shell: pwsh
-        run: dotnet build --configuration Release --no-restore
-      - name: Test
-        shell: pwsh
-        run: dotnet test --no-restore --verbosity normal
   horusec-security:
       name: horusec-security
       runs-on: ubuntu-latest
