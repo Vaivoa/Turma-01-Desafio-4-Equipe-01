@@ -6,6 +6,10 @@
 ![GitActions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 ![AzureFunctions](https://img.shields.io/badge/Azure_Functions-0062AD?style=for-the-badge&logo=azure-functions&logoColor=white)
 
+## Pipeline Status
+[![code-analizer-logs](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/analizer.yml/badge.svg)](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/analizer.yml)
+[![code-analizer-kafka](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/analizerkafka.yml/badge.svg)](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/analizerkafka.yml)
+[![Deploy DotNet project to Azure Function App](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/deploy.yml/badge.svg)](https://github.com/Vaivoa/Turma-01-Desafio-4-Equipe-01/actions/workflows/deploy.yml)
 
 # Turma-01-Desafio-4-Equipe-01 - Projeto Logs
 
