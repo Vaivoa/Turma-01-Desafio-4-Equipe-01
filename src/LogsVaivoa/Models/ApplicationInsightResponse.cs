@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nest;
 
 namespace LogsVaivoa.Models
 {
@@ -10,6 +11,14 @@ namespace LogsVaivoa.Models
         {
             public string name { get; set; }
             public string type { get; set; }
+
+            public Column() { }
+
+            public Column(string name, string type)
+            {
+                this.name = name;
+                this.type = type;
+            }
         }
 
         public class Table
@@ -17,13 +26,27 @@ namespace LogsVaivoa.Models
             public string name { get; set; }
             public List<Column> columns { get; set; }
             public List<List<string>> rows { get; set; }
+
+            public Table()
+            {
+                
+            }
+            public Table(string name, List<Column> columns, List<List<string>> rows)
+            {
+                this.name = name;
+                this.columns = columns;
+                this.rows = rows;
+            }
         }
 
        
         public List<Table> tables { get; set; }
+
+        public ApplicationInsightResponse()
+        {
+            tables = new List<Table>();
+        }
         
-
-
         public List<LogApplicationInsight> MapToLog()
         {
             try

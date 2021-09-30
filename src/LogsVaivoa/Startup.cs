@@ -1,4 +1,5 @@
-﻿using LogsVaivoa.Interface;
+﻿using LogsVaivoa.Infra;
+using LogsVaivoa.Interface;
 using LogsVaivoa.repository;
 using LogsVaivoa.Services;
 using Microsoft.Azure.WebJobs;
