@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -40,7 +41,11 @@ namespace LogsVaivoa
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<Log>(requestBody);
 
-            await _appService.SendMetricToElastic();
+            if (Environment.GetEnvironmentVariable("SendMetrics") == "true")
+            {
+                await _appService.SendMetricToElastic();
+            }
+
             var (status, result) = await _logService.PostLog(data);
 
             if (status) return new CreatedResult("", result);
