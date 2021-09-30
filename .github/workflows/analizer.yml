@@ -38,14 +38,21 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Setup DotNet 5.0 Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
     - name: Setup sonarqube 
       shell: pwsh
       run: |
         dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global coverlet.console 
     - name: Run Sonarqube scanner
       shell: pwsh
       run: |
         cd "./src/LogsVaivoa"
-        dotnet sonarscanner begin /k:"Logs" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
+        dotnet sonarscanner begin /k:"Logs" /d:sonar.cs.opencover.reportsPaths="opencover.xml" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
         dotnet build
+        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover  /p:CoverletOutput=coverage /p:Exclude=[xunit.*]* ./LogsVaivoa.sln
+        move ..\..\test\Logs.Test\coverage.opencover.xml opencover.xml -force
         dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
