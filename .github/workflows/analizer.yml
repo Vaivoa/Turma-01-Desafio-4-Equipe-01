@@ -39,9 +39,9 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Setup DotNet 5.0 Environment
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
     - name: Setup sonarqube 
       shell: pwsh
       run: |
