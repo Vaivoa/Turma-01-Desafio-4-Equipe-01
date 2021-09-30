@@ -13,7 +13,7 @@ namespace LogsVaivoa.Services
     public class ApplicationInsightService : IApplicationInsightService
     {
         private static readonly string UrlApplicationInsights = Environment.GetEnvironmentVariable("UrlApplicationInsights");
-        private static readonly string IndexAI = Environment.GetEnvironmentVariable("IndexAI");
+        private static readonly string IndexAi = Environment.GetEnvironmentVariable("IndexAI");
         private readonly IElasticsearchService _elasticService;
         private readonly HttpClient _httpClient;
         private readonly ILogger<ApplicationInsightService> _log;
@@ -50,7 +50,7 @@ namespace LogsVaivoa.Services
             
             var logs = result?.MapToLog();
 
-            if (logs == null || logs.Any(i => i == null))
+            if (logs == null)
             {
                 _log.LogError("Falha ao realizar conversão das métricas do aplication insight");
             }
@@ -58,7 +58,7 @@ namespace LogsVaivoa.Services
             {
                 foreach (var log in logs)
                 {
-                    var resultElastic = await _elasticService.SendToElastic(log, IndexAI);
+                    var resultElastic = await _elasticService.SendToElastic(log, IndexAi);
 
                     if (!resultElastic)
                     {
