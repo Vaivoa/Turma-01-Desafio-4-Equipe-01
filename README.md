@@ -17,7 +17,6 @@ O objetivo deste desafio é criar uma função do Azure (Azure Function) para re
 Na segunda parte do desafio, criamos uma função de TimeTrigger e utilizamos o Kafka para ler um topico da aplicação do desafio 3, esse topico tem informações sobre alteração do cadastro do cliente. Após a leitura desse topico armazenaremos essas informações com Redis em cache para manter atualizada a informação de alteração de cadastro do cliente. 
 
 ## Tecnologias usadas
-- [Contribuidores](#contribuidores)
 - C#
 - Azure Functions
 - Elastic Search
@@ -53,7 +52,7 @@ Em ``` Settings ``` na aba ``` Secrets ``` adicione as variaveis.
 ``` AZURE_FUNCTIONAPP_PACKAGE_PATH: src/LogsVaivoa ``` - Caminho da função no diretorio do projeto
 
 
-
+## Deploy no Azure
 ``` name: Deploy DotNet project to Azure Function App
 
 on:
@@ -95,6 +94,73 @@ jobs:
         
 ```
 
+## Análise de Código 
+
+```
+name: code-analizer-logs
+
+
+on:
+  push:
+    branches: [ main, develop ]
+
+ 
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_NAME: logs-vaivoa-turma1  
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: src/LogsVaivoa    
+  DOTNET_VERSION: '3.x'   
+
+
+jobs:
+  horusec-security:
+      name: horusec-security
+      runs-on: ubuntu-latest
+      steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Running Horusec Security
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+          horusec start -p="./src/" -e="true"   
+  sonarqube-analizer:
+    needs: [horusec-security]
+    runs-on: windows-latest
+    environment: dev
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Setup DotNet 5.0 Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+    - name: Setup sonarqube 
+      shell: pwsh
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global coverlet.console 
+    - name: Run Sonarqube scanner
+      shell: pwsh
+      run: |
+        cd "./src/LogsVaivoa"
+        dotnet sonarscanner begin /k:"Logs" /d:sonar.cs.opencover.reportsPaths="opencover.xml" /d:sonar.host.url=${{secrets.SONAR_HOST}} /d:sonar.qualitygate.wait=true /d:sonar.login=${{secrets.SONAR_TOKEN}}
+        dotnet build
+        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover  /p:CoverletOutput=coverage /p:Exclude=[xunit.*]* ./LogsVaivoa.sln
+        move ..\..\test\Logs.Test\coverage.opencover.xml opencover.xml -force
+        dotnet sonarscanner end /d:sonar.login=${{secrets.SONAR_TOKEN}}
+        
+```
+
+Variaveis de Ambiente
+- SONAR_HOST - Essa variável é a URL.
+- SONAR_TOKEN - Quando você criar o projeto no SonarQube, será gerado um token, esse token é essa variavel de ambiente.
+
 ## Configurar Azure
 
 - Criar uma conta no portal da ``` Azure ```
@@ -107,7 +173,40 @@ jobs:
 - Para criar uma tabela nesse banco de dados é necessário acessar o Visual Studio, e quando a função já estiver criada, vá em ![image](https://user-images.githubusercontent.com/63682265/135263582-c91133d0-bdfe-430f-b279-20750d3a8e85.png) ``` SQL SERVER EXPLORER ```, clique com o botão direito em ``` SQL SERVER ```, clique em ``` ADD SERVER ```, vá na opção ``` Azure ```, se conecte a sua conta e escolha o servidor que foi criado ``` DbLog   ```.
 - Acesse o ``` DbLog ```, e clique com botão direito em ``` Tables ``` e selecione a opção ``` Add new Table ```. - Nomeamos a tabela ``` Logs ``` ![image](https://user-images.githubusercontent.com/63682265/135267534-22ef82a8-3509-412e-aced-e3249db2df0a.png)
 
+## Configurar Horusec
 
+Para configurar o ``` Horusec ``` na nossa pipeline, é necessário apenas colar o código abaixo no ``` jobs ``` do arquivo .yml.
+
+``` 
+jobs:
+  horusec-security:
+    name: horusec-security
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Running Horusec Security
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+        horusec start -p="./" -e="true" 
+
+```
+
+## Configurar SonarQube 
+
+Para configurar o ``` SonarQube ``` na nossa pipeline, é necessário subir o SonarQube em uma marquina virtual. E para esse projeto decidimos simplificar, e usamos a marquina virtual ``` AWS EC2 ``` e usamos um orquestrador de containers, o ``` Caphover ```. Dessa forma usamos o ``` SonarQube ``` dentro de um container e não precisamos subir ele e mais banco de dados na VM, economizando custos para esse projeto. 
+
+Para instalar o ``` CapHover ``` é só abrir o console do AWS e colar o código abaixo.
+
+```
+sudo bash
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo systemctl enable docker
+sudo usermod -a -G docker ec2-user
+sudo docker run -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
+```
+Ao abrir o ``` CapHover ``` você vai procurar pelo SonarQube e seguir o passo a passo para subir o container e configura-lo.
 
 
 ## Contribuidores
