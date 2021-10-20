@@ -16,6 +16,10 @@
 O objetivo deste desafio é criar uma função do Azure (Azure Function) para receber, através de uma requisição HTTP POST, informações de log de uma aplicação que deverão ser armazenadas em um banco de dados que posteriormente foi utilizado para criação de um dashboard na implementação de monitoramento via stack ELK.
 Na segunda parte do desafio, criamos uma função de TimeTrigger e utilizamos o Kafka para ler um topico da aplicação do desafio 3, esse topico tem informações sobre alteração do cadastro do cliente. Após a leitura desse topico armazenaremos essas informações com Redis em cache para manter atualizada a informação de alteração de cadastro do cliente. 
 
+# Fluxo
+
+![Desafio 4@1 100000023841858x](https://user-images.githubusercontent.com/63682265/138184949-a0bc0a15-3176-4d44-ad84-ea83ea61f946.png)
+
 ## Tecnologias usadas
 - C#
 - Azure Functions
@@ -207,6 +211,59 @@ sudo usermod -a -G docker ec2-user
 sudo docker run -p 80:80 -p 443:443 -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock -v /captain:/captain caprover/caprover
 ```
 Ao abrir o ``` CapHover ``` você vai procurar pelo SonarQube e seguir o passo a passo para subir o container e configura-lo.
+
+## Elastic Cloud
+
+Para esse projeto usamos o Elastic Cloud. 
+
+- Crie uma conta no ElasticCloud
+- Pegar a ElasticSearch endpoint url - No projeto chamamos de ElkConnection
+- Criar uma Interface e um Serviço para conexão com Elastic Service
+
+## Criar um Deployment
+
+No site do Elastic Cloud, crie um deployment, salve as credenciais.
+
+Todos os endpoints que você venha a precisar estaram no dashboard inicial do seu Deployment. No projeto usamos o endpoint do ``` Elasticsearch ```
+
+![image](https://user-images.githubusercontent.com/63682265/138185585-b01e3eb1-b102-4550-bb42-3856f7bdd888.png)
+
+# Interface
+
+```
+public interface IElasticsearchService
+    {
+        public Task<bool> SendToElastic<T>(T log, string index) where T : class;
+    }
+```
+
+
+# Elastic Search Service
+```
+public class ElasticsearchService : IElasticsearchService
+    {
+        private ElasticClient _elasticClient;
+
+        public ElasticsearchService()
+        {
+            var uriElastic = new Uri(Environment.GetEnvironmentVariable("ElkConnection")!);
+            var elasticsearchSettings = new ConnectionSettings(uriElastic);
+            _elasticClient = new ElasticClient(elasticsearchSettings);
+        }
+
+        public async Task<bool> SendToElastic<T>(T log, string index) where T : class
+        {
+            var resultElastic = await _elasticClient
+                .IndexAsync(log, idx => idx.Index(index));
+            
+            return resultElastic.IsValid;
+        }
+        
+        
+    }
+```
+
+
 
 
 ## Contribuidores
