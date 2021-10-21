@@ -228,6 +228,8 @@ Todos os endpoints que você venha a precisar estaram no dashboard inicial do se
 
 ![image](https://user-images.githubusercontent.com/63682265/138185585-b01e3eb1-b102-4550-bb42-3856f7bdd888.png)
 
+É possivel também trabalhar com elastic search local, usando o docker.
+
 # Interface
 
 ```
@@ -263,6 +265,35 @@ public class ElasticsearchService : IElasticsearchService
     }
 ```
 
+## Log Service
+
+```
+public class LogService : ILogService
+    {
+        private static readonly string IndexLog = Environment.GetEnvironmentVariable("IndexLog");
+        private readonly IElasticsearchService _elasticService;
+        private readonly ILogger<LogService> _logger;
+        private readonly ILogRepository _logRepository;
+        public LogService(IElasticsearchService elasticService, ILogger<LogService> logger, IDbContext dbContext, ILogRepository logRepository)
+        {
+            _elasticService = elasticService;
+            _logger = logger;
+            _logRepository = logRepository;
+        }
+
+        public async Task<(bool, object)> PostLog(Log log)
+        {
+            if (!log.IsValid()) return (false, log.GetErrors());
+
+            await _elasticService.SendToElastic(log, IndexLog);
+
+            await _logRepository.InsertLogDb(log);
+
+            return (true, log);
+        }
+    }
+
+```
 
 
 
